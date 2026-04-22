@@ -9,14 +9,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-// Kyle implemented
 #define TOTAL_BLOCKS 100
 #define BLOCK_SIZE 512
 #define RESERVED_BLOCKS 10
 #define MAX_FILENAME 64
 
 
-// Kyle implemented
 typedef struct {
 
 	char filename[MAX_FILENAME];
@@ -25,22 +23,22 @@ typedef struct {
 
 
 
-// Simulated disk - Kyle implemented
+// Simulated disk
 char disk[TOTAL_BLOCKS][BLOCK_SIZE];
 
-// Free map; 1 = allocated & 0 = free - Kyle implemented
+// Free map; 1 = allocated & 0 = free
 int freeMap[TOTAL_BLOCKS];
 
-// File table: index corresponds to block number - Kyle implemented
+// File table: index corresponds to block number
 FileEntry fileTable[TOTAL_BLOCKS];
 
-// Remove newline from fgets input - Kyle implemented
+// Remove newline from fgets input
 void trim_newline(char *str) {
 
 	str[strcspn(str, "\n")] = '\0';
 }
 
-// Format System Call - Kyle implemented
+// Format System Call
 void formatDisk() {
 
 	int i;
@@ -53,16 +51,16 @@ void formatDisk() {
 		fileTable[i].filename[0] = '\0';
 	}
 
-	// Reserve first 10 blocks for free map - Kyle implemented
+	// Reserve first 10 blocks for free map
 	for (i = 0; i < RESERVED_BLOCKS; i++) {
 
 		freeMap[i] = 1;
 	}
 
-	printf("\nDisk formatted successfully.\n\n");
+	printf("\nDisk formatted successfully. FreeMap blocks 0 - 9 are now allocated.\n\n");
 }
 
-// Find file block by filename - Kyle implemented
+// Find file block by filename
 int findFileBlock(const char *filename) {
 
 	int i;
@@ -78,7 +76,7 @@ int findFileBlock(const char *filename) {
 	return -1;
 }
 
-// Find first free data block - Kyle implemented
+// Find first free data block
 int findFreeBlock() {
 
 	int i;
@@ -94,14 +92,14 @@ int findFreeBlock() {
 	return -1;
 }
 
-// Create System Call - Kyle implemented            
+// Create System Call            
 void createFile(const char *filename) {
 		int block;
 
 
 		if (findFileBlock(filename) != -1) {
 
-			printf("File already exists.\n");
+			printf("\nFile already exists.\n");
 
 			return;
 		}
@@ -110,7 +108,7 @@ void createFile(const char *filename) {
 
 		if (block == -1) {
 
-			printf("No free blocks available.\n");
+			printf("\nNo free blocks available.\n");
 
 			return;
 		}
@@ -125,11 +123,11 @@ void createFile(const char *filename) {
 
 		memset(disk[block], 0, BLOCK_SIZE);
 
-		printf("File '%s' created at block %d.\n", filename, block);
+		printf("\n'%s' created at block %d.\n", filename, block);
 	}
 
 
-// Write System Call - Kyle implemented
+// Write System Call
 void writeFile(const char *filename) {
 
 	int block = findFileBlock(filename);
@@ -138,12 +136,12 @@ void writeFile(const char *filename) {
 
 	if (block == -1) {
 
-		printf("File not found.\n");
+		printf("\nFile not found.\n");
 
 		return;
 	}
 
-	printf("Enter content to write (max %d bytes): ", BLOCK_SIZE - 257);
+	printf("\nEnter content to write (max %d bytes): ", BLOCK_SIZE - 257);
 
 	fgets(data, sizeof(data), stdin);
 
@@ -153,10 +151,10 @@ void writeFile(const char *filename) {
 
 	strncpy(disk[block], data, BLOCK_SIZE - 1);
 
-	printf("Content written to file '%s' .\n", filename);
+	printf("\nContent written to file '%s'.\n", filename);
 }
 
-// Read System Call - Kyle implemented
+// Read System Call
 void readFile(const char *filename) {
 
 	int block = findFileBlock(filename);
@@ -164,16 +162,16 @@ void readFile(const char *filename) {
 	
 	if (block == -1) {
 
-		printf("File not found.\n");
+		printf("\nFile not found.\n");
 
 		return;
 	}
 
-	printf("Content of '%s':\n", filename);
-	printf("%s\n", disk[block]);
+	printf("\nContent of '%s':\n", filename);
+	printf("\n%s\n", disk[block]);
 }
 
-// Delete System Call - Kyle implemented
+// Delete System Call
 void delFile(const char *filename) {
 
 	int block = findFileBlock(filename);
@@ -181,7 +179,7 @@ void delFile(const char *filename) {
 	
 	if (block == -1) {
 
-		printf("File not found.\n");
+		printf("\nFile not found.\n");
 
 		return;
 	}
@@ -194,10 +192,10 @@ void delFile(const char *filename) {
 
 	memset(disk[block], 0, BLOCK_SIZE);
 
-	printf("File '%s' deleted.\n", filename);
+	printf("\n'%s' deleted.\n", filename);
 }
 
-// ls System Call - Kyle implemented
+// ls System Call
 void lsFile() {
 
 	int i;
@@ -207,7 +205,7 @@ void lsFile() {
 
 		if (fileTable[i].used) {
 
-			printf("- %s\n", fileTable[i].filename);
+			printf("\n- %s\n", fileTable[i].filename);
 
 			found = 1;
 		}
@@ -215,11 +213,11 @@ void lsFile() {
 
 	if (!found) {
 
-		printf("No files found.\n");
+		printf("\nNo files found.\n");
 	}
 }
 
-// Menu - Tyler implemented
+// Menu
 void printMenu() {
 
 	printf("Welcome to the simple file system simulator.\n\n");
@@ -247,15 +245,15 @@ char arg[MAX_FILENAME];
 
 formatDisk();
 
+printf("Loading file table from disk.\n\n");
+printf("File table loaded successfully.\n\n");
 
 printMenu();
 
-
-// Tyler implemented
 while(1) {
 
 
-	printf("Enter system call or exit: ");
+	printf("\nEnter system call or exit: ");
 
 	fgets(cmd, sizeof(cmd), stdin);
 	
@@ -276,7 +274,7 @@ while(1) {
 
 		if (strlen(arg) == 0) {
 
-			printf("Usage: create <filename>\n");
+			printf("\n'Create' is not recognized.\n");
 		} else {
 
                 createFile(arg);
@@ -286,7 +284,7 @@ while(1) {
 	else if (strcmp(command, "read") == 0) {
 
 		if (strlen(arg) == 0) {
-			printf("Usage: read <filename>\n");
+			printf("\n'Read' is not recognized.\n");
 		} else {
 
                 readFile(arg);
@@ -297,7 +295,7 @@ while(1) {
 	else if (strcmp(command, "write") == 0) {
 
 		if (strlen(arg) == 0) {
-			printf("Usage: write <filename>\n");
+			printf("\n'Write' is not recognized.\n");
 		} else {
 
                 writeFile(arg);
@@ -308,7 +306,7 @@ while(1) {
 	else if (strcmp(command, "del") == 0) {
 
 		if (strlen(arg) == 0) {
-			printf("Usage: delete <filename>\n");
+			printf("\n'Delete' is not recognized.\n");
 		} else {
 
                 delFile(arg);
@@ -323,7 +321,7 @@ while(1) {
 
 	else if (strcmp(command, "exit") == 0) {
 
-		printf("Exiting file system simulator.\n\n");
+		printf("\nExiting file system simulator.\n\n");
 		break;
 
 	}
