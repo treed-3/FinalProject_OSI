@@ -23,7 +23,6 @@ typedef struct {
 	int used;
 } FileEntry;
 
-char cmd[1024];
 
 
 // Simulated disk - Kyle implemented
@@ -41,7 +40,7 @@ void trim_newline(char *str) {
 	str[strcspn(str, "\n")] = '\0';
 }
 
-// Initialize disk & file system - Kyle implemented
+// Format System Call - Kyle implemented
 void formatDisk() {
 
 	int i;
@@ -95,21 +94,10 @@ int findFreeBlock() {
 	return -1;
 }
 
-// Format System Call - Kyle implemented            
-void createFile() {
-	char filename[MAX_FILENAME];
+// Create System Call - Kyle implemented            
+void createFile(const char *filename) {
 		int block;
 
-		printf("Enter filename: ");
-
-		fgets(filename, sizeof(filename), stdin);
-		trim_newline(filename);
-
-		if (strlen(filename) == 0) {
-			printf("Filename cannot be empty.\n");
-
-			return;
-		}
 
 		if (findFileBlock(filename) != -1) {
 
@@ -142,19 +130,11 @@ void createFile() {
 
 
 // Write System Call - Kyle implemented
-void writeFile() {
+void writeFile(const char *filename) {
 
-	char filename[MAX_FILENAME];
+	int block = findFileBlock(filename);
 	char data[BLOCK_SIZE];
-	int block;
 
-	printf("Enter filename: ");
-
-	fgets(filename, sizeof(filename), stdin);
-
-	trim_newline(filename);
-
-	block = findFileBlock(filename);
 
 	if (block == -1) {
 
@@ -163,7 +143,7 @@ void writeFile() {
 		return;
 	}
 
-	printf("Enter data to write (max %d characters): ", BLOCK_SIZE - 1);
+	printf("Enter content to write (max %d bytes): ", BLOCK_SIZE - 257);
 
 	fgets(data, sizeof(data), stdin);
 
@@ -173,21 +153,15 @@ void writeFile() {
 
 	strncpy(disk[block], data, BLOCK_SIZE - 1);
 
-	printf("Data written to file '%s' .\n", filename);
+	printf("Content written to file '%s' .\n", filename);
 }
 
 // Read System Call - Kyle implemented
-void readFile() {
+void readFile(const char *filename) {
 
-	char filename[MAX_FILENAME];
-	int block;
+	int block = findFileBlock(filename);
 
-	printf("Enter filename: ");
-	fgets(filename, sizeof(filename), stdin);
-	trim_newline(filename);
-
-	block = findFileBlock(filename);
-
+	
 	if (block == -1) {
 
 		printf("File not found.\n");
@@ -200,17 +174,11 @@ void readFile() {
 }
 
 // Delete System Call - Kyle implemented
-void delFile() {
+void delFile(const char *filename) {
 
-	char filename[MAX_FILENAME];
-	int block;
+	int block = findFileBlock(filename);
 
-	printf("Enter filename");
-	fgets(filename, sizeof(filename), stdin);
-	trim_newline(filename);
-
-	block = findFileBlock(filename);
-
+	
 	if (block == -1) {
 
 		printf("File not found.\n");
@@ -235,13 +203,11 @@ void lsFile() {
 	int i;
 	int found = 0;
 
-	printf("File in root directory:\n");
-
 	for (i = RESERVED_BLOCKS; i < TOTAL_BLOCKS; i++) {
 
 		if (fileTable[i].used) {
 
-			printf("Block %d : %s\n", i, fileTable[i].filename);
+			printf("- %s\n", fileTable[i].filename);
 
 			found = 1;
 		}
@@ -275,7 +241,8 @@ void printMenu() {
 int main() {
 
 char cmd[32];
-int choice;
+char command[32];
+char arg[MAX_FILENAME];
 
 
 formatDisk();
@@ -296,42 +263,67 @@ while(1) {
 	cmd[strcspn(cmd, "\n")] = '\0';
 
 
+	// Split command & argument
+	arg[0] = '\0';
+	sscanf(cmd, "%31s %63s", command, arg);
 
-	if (strcmp(cmd, "format") == 0) {
+	if (strcmp(command, "format") == 0) {
 
 		formatDisk();
 	}
 
-	else if (strcmp(cmd, "create") == 0) {
+	else if (strcmp(command, "create") == 0) {
 
-                createFile();
+		if (strlen(arg) == 0) {
+
+			printf("Usage: create <filename>\n");
+		} else {
+
+                createFile(arg);
+		}
         }
 
-	else if (strcmp(cmd, "read") == 0) {
+	else if (strcmp(command, "read") == 0) {
 
-                readFile();
+		if (strlen(arg) == 0) {
+			printf("Usage: read <filename>\n");
+		} else {
+
+                readFile(arg);
+		}
         }
 
 
-	else if (strcmp(cmd, "write") == 0) {
+	else if (strcmp(command, "write") == 0) {
 
-                writeFile();
+		if (strlen(arg) == 0) {
+			printf("Usage: write <filename>\n");
+		} else {
+
+                writeFile(arg);
+		}
         }
 
 
-	else if (strcmp(cmd, "del") == 0) {
+	else if (strcmp(command, "del") == 0) {
 
-                delFile();
+		if (strlen(arg) == 0) {
+			printf("Usage: delete <filename>\n");
+		} else {
+
+                delFile(arg);
+		}
         }
 
 
-	else if (strcmp(cmd, "ls") == 0) {
+	else if (strcmp(command, "ls") == 0) {
 
                 lsFile();
         }
 
-	else if (strcmp(cmd, "exit") == 0) {
+	else if (strcmp(command, "exit") == 0) {
 
+		printf("Exiting file system simulator.\n\n");
 		break;
 
 	}
