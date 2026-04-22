@@ -26,17 +26,17 @@ Tyler implemented:
 - menu
 - **main:**
   
--> cmd
+  -> cmd
 
--> command
+  -> command
 
--> arg
+  -> arg
 
--> calling formatDisk()
+  -> calling formatDisk()
 
--> two print statements of "Loading file table from disk" and "File table loaded successfully"
+  -> two print statements of "Loading file table from disk" and "File table loaded successfully"
 
--> calling printMenu()
+  -> calling printMenu()
 
 - **created always-true while loop with:**
   
