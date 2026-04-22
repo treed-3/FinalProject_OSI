@@ -24,7 +24,19 @@ Kyle implemented:
 Tyler implemented:
 - ls system call
 - Menu
-- main program
+- main:
+-   cmd
+-   command
+-   arg
+-   calling formatDisk()
+-   two print statements of "Loading file table from disk" and "File table loaded successfully"
+-   calling printMenu()
+- Created always-true while loop with:
+-   print statement of "Enter system call or exit: "
+-   fgets
+-   stripping newline
+-   split of command and argument
+-   created if statements of user input "format", "create", "Read", "write", "del", "ls", "exit"
   
 ----- COLLABORATIVE EXPERIENCE -----
 
