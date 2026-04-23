@@ -48,7 +48,7 @@ Tyler implemented:
 
   - split of command and argument
 
-  - created if statements of user input "format", "create", "Read", "write", "del", "ls", "exit"
+  - created if statements of user input "format", "create", "read", "write", "del", "ls", "exit"
   
 ----- COLLABORATIVE EXPERIENCE -----
 
